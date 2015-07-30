@@ -6,8 +6,8 @@
 
 import os
 import subprocess
-root_dir = '/Volumes/Client_Drive'
-dest_root = '/Volumes/Our_Drive'
+root_dir = '/run/media/beast/RB_BACKUP_1'
+dest_root = '/run/media/beast/data/RB_BACKUP_1'
 FFMPEG_PATH = '/usr/bin/ffmpeg'
 
 
@@ -18,7 +18,7 @@ def find_dir_with_mts(root_dir):
     directories = []
     for root, dirs, files in os.walk(root_dir):
         for file in files:
-            if file.endswith(".MTS"):
+            if file.endswith(".MXF"):
                 directories.append(root)
     directories_set = set(directories)
     directories = list(directories_set)
@@ -41,24 +41,24 @@ def find_dir_with_mts(root_dir):
 def make_folders_on_dest_drive(source_dirs, dest_root):
     for dirs in source_dirs:
         temp = dirs.split('/')
-        temp = temp[2:6]
-        prepend = temp
-        prepend = '_'.join(prepend)
-        prepend = prepend + '_'
+        temp = temp[4:]
+#        prepend = temp
+        #prepend = '_'.join(prepend)
+        #prepend = prepend + '_'
         temp.insert(0, '')
         new_path = '/'.join(temp)
         new_path = dest_root + new_path
         os.makedirs(new_path)
         mts = os.listdir(dirs)
-        temp_path = new_path + "/"
-        for i in mts:
-            temp_source = dirs + '/' + i
-            print temp_source
-            name = ''.join(i.split('.')[:-1])
-            output = '{}.mov'.format(name)
-            output = prepend + output
-            output = temp_path + output
-            subprocess.call([FFMPEG_PATH, '-i', temp_source, '-c:v', 'prores', '-profile:v', '1', '-c:a', 'pcm_s16le', output])
+        #temp_path = new_path + "/"
+        #for i in mts:
+        #    temp_source = dirs + '/' + i
+    #        print temp_source
+    #        name = ''.join(i.split('.')[:-1])
+    #        output = '{}.mov'.format(name)
+    #        output = prepend + output
+    #        output = temp_path + output
+            #subprocess.call([FFMPEG_PATH, '-i', temp_source, '-c:v', 'prores', '-profile:v', '1', '-c:a', 'pcm_s16le', output])
 
 
 a = find_dir_with_mts(root_dir)
