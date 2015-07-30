@@ -9,6 +9,7 @@ import subprocess
 root_dir = '/run/media/beast/RB_BACKUP_1'
 dest_root = '/run/media/beast/data'
 FFMPEG_PATH = '/usr/bin/ffmpeg'
+ext_of_src = '.MXF'
 
 
 
@@ -19,7 +20,7 @@ def find_dir_with_mts(root_dir):
     src_files = []
     for root, dirs, files in os.walk(root_dir):
         for file in files:
-            if file.endswith(".MXF"):
+            if file.endswith(ext_of_src):
                 directories.append(root)
                 src_files.append(os.path.join(root, file))
     directories_set = set(directories)
@@ -56,7 +57,7 @@ def make_folders_on_dest_drive(source_dirs, dest_root):
         mts = os.listdir(dirs)
         temp_path = new_path + "/"
         for i in mts:
-            if i.endswith(".MXF"):
+            if i.endswith(ext_of_src):
                 temp_source = dirs + '/' + i
                 name = ''.join(i.split('.')[:-1])
                 output = '{}.mov'.format(name)
