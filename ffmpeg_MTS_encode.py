@@ -10,6 +10,7 @@ root_dir = '/run/media/beast/RB_BACKUP_1'
 dest_root = '/run/media/beast/data'
 FFMPEG_PATH = '/usr/bin/ffmpeg'
 ext_of_src = '.MXF'
+leave_out_of_path = ['run', 'media', 'beast', 'CONTENTS', 'CLIPS001']
 
 
 
@@ -17,15 +18,13 @@ ext_of_src = '.MXF'
 
 def find_dir_with_mts(root_dir):
     directories = []
-    src_files = []
     for root, dirs, files in os.walk(root_dir):
         for file in files:
             if file.endswith(ext_of_src):
                 directories.append(root)
-                src_files.append(os.path.join(root, file))
     directories_set = set(directories)
     directories = list(directories_set)
-    return directories, src_files
+    return directories
 
 
 #Recreates on a destination drive part of the path of the MTS directies
@@ -42,16 +41,18 @@ def find_dir_with_mts(root_dir):
 #It would be great if this could retain or create a reelname / timecode.
 
 def make_folders_on_dest_drive(source_dirs, dest_root):
-    directories, src_files = source_dirs
+    directories = source_dirs
     for dirs in directories:
         temp = dirs.split('/')
-        temp = temp[4:]
-        #need a better way to exclude direcories
+        cleaned_temp = []
+        for i in temp:
+            if i not in leave_out_of_path:
+                cleaned_temp.append(i)
 #        prepend = temp
         #prepend = '_'.join(prepend)
         #prepend = prepend + '_'
-        temp.insert(0, '')
-        new_path = '/'.join(temp)
+        ##temp.insert(0, '')
+        new_path = '/'.join(cleaned_temp)
         new_path = dest_root + new_path
         os.makedirs(new_path)
         mts = os.listdir(dirs)
@@ -61,9 +62,9 @@ def make_folders_on_dest_drive(source_dirs, dest_root):
                 temp_source = dirs + '/' + i
                 name = ''.join(i.split('.')[:-1])
                 output = '{}.mov'.format(name)
-    #        output = prepend + output
+                ##output = prepend + output
                 output = temp_path + output
-                subprocess.call([FFMPEG_PATH, '-i', temp_source, '-c:v', 'prores', '-profile:v', '2', '-c:a', 'copy', '-map', '0', output])
+                subprocess.call([FFMPEG_PATH, '-i', temp_source, '-c:v', 'prores', '-profile:v', '0', '-c:a', 'copy', '-map', '0', output])
 
 
 a = find_dir_with_mts(root_dir)
